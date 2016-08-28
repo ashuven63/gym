@@ -27,8 +27,8 @@ class MultiArmedBandit(gym.Env):
 
     def _step(self, action):
         assert self.action_space.contains(action)
-	reward = np.random.normal(loc = q_star[action], scale = self.reward_var)
-	return (None, reward, False, {})
+        reward = np.random.normal(loc=self.q_star[action], scale=self.reward_var)
+        return (None, reward, False, {})
 
     def _reset(self):
         self.q_star = self.init_q_star()
