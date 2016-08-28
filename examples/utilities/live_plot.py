@@ -39,7 +39,7 @@ class LivePlot(object):
             plt.pause(0.000001)
 
 if __name__ == '__main__':
-    env = gym.make('CartPole-v0')
+    env = gym.make('MultiArmBandit-v0')
     outdir = '/tmp/random-agent-results'
     env.monitor.start(outdir, force=True, seed=0)
 

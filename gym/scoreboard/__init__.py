@@ -77,6 +77,12 @@ add_group(
     description='Environments to test various AI safety properties.'
 )
 
+add_group(
+    id='multiarm_bandit',
+    name='Multi Arm Bandit',
+    description='Simulate multi arm bandit problem'
+)
+
 # classic control
 
 add_task(

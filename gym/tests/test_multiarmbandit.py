@@ -1,6 +1,6 @@
 import logging
 import os, sys
-
+from gym.examples.agents.random_agent import RandomAgent
 import gym
 
 # You can optionally set up the logger. Also fine to set the level

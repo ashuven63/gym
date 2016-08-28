@@ -4,7 +4,7 @@ from gym import spaces
 from gym.utils import seeding
 
 
-class MultiArmedBandit(gym.Env):
+class MultiArmBandit(gym.Env):
 
     def __init__(self, num_arms=10, value_mean=0, value_var=1, reward_var=1):
         self.value_mean = value_mean
@@ -17,7 +17,7 @@ class MultiArmedBandit(gym.Env):
     def init_q_star(self):
         # TODO(abora) : figure out how to use random seed
         q_star = {}
-        for action in self.action_space:
+        for action in range(0, self.action_space.n):
             q_star[action] = np.random.normal(loc=self.value_mean, scale=self.value_var)
         return q_star
 
