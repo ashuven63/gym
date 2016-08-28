@@ -6,10 +6,17 @@ from gym.utils import seeding
 
 class MultiArmBandit(gym.Env):
 
-    def __init__(self, num_arms=10, value_mean=0, value_var=1, reward_var=1):
+    def __init__(self,
+                 num_arms=10,
+                 value_mean=0,
+                 value_var=1,
+                 reward_var=1,
+                 stationary=True,
+                 random_walk_var=0.01):
         self.value_mean = value_mean
         self.value_var = value_var
         self.reward_var = reward_var
+        self.stationary = stationary
         self.action_space = spaces.Discrete(num_arms)
         self._seed()
         self._reset()
@@ -28,7 +35,13 @@ class MultiArmBandit(gym.Env):
     def _step(self, action):
         assert self.action_space.contains(action)
         reward = np.random.normal(loc=self.q_star[action], scale=self.reward_var)
+        if not self.stationary:
+            self.random_walk()
         return (None, reward, False, {})
+
+    def random_walk(self):
+        for action in range(0, self.action_space.n):
+            self.q_star[action] += np.random.normal(loc=0.0, scale=self.random_walk_var)
 
     def _reset(self):
         self.q_star = self.init_q_star()

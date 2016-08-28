@@ -4,15 +4,15 @@ import numpy as np
 
 class EpsilonGreedyAgent(object):
     """Expects the driver to call update after every call to act"""
-    def __init__(self, action_space, epsilon=0.1, alpha=0.1, recency_weighting=True):
+    def __init__(self, action_space, epsilon=0.1, alpha=0.1, recency_weighting=True, init_value=0):
         self.action_space = action_space
         self.epsilon = epsilon
         self.alpha = alpha
         self.recency_weighting = recency_weighting
         # Initialize initial Q estimates and value counts for actions.
         self.prev_action = None
-        self.Q = {action: 0 for action in range(0, self.action_space.N)}
-        self.N = {action: 0 for action in range(0, self.action_space.N)}
+        self.Q = {action: init_value for action in range(self.action_space.n)}
+        self.N = {action: 0 for action in range(self.action_space.n)}
 
     # TODO(klad) : Handle observations for generic case.
     def act(self, observation):
@@ -28,7 +28,7 @@ class EpsilonGreedyAgent(object):
 
     def optimal_action(self):
         """Find optimal action."""
-        best_value = max([self.Q[action] for action in range(0, self.action_space.N)])
+        best_value = max([self.Q[action] for action in range(0, self.action_space.n)])
         optimal_actions = [action for action in self.Q if self.Q[action] == best_value]
         assert (len(optimal_actions) > 0)
         # Return randomly from optimal actions.
