@@ -3,17 +3,18 @@ import logging
 import gym
 import numpy as np
 
+
 class EpsilonGreedyAgent(object):
     """Expects the driver to call update after every call to act"""
-    def __init__(self, action_space, epsilon=0.1, alpha=0.1, recency_weighting=True):
+    def __init__(self, action_space, epsilon=0.1, alpha=0.1, recency_weighting=True, init_value=0):
         self.action_space = action_space
         self.epsilon = epsilon
         self.alpha = alpha
         self.recency_weighting = recency_weighting
         # Initialize initial Q estimates and value counts for actions.
         self.prev_action = None
-        self.Q = {action: 0 for action in range(0, self.action_space.N)}
-        self.N = {action: 0 for action in range(0, self.action_space.N)}
+        self.Q = {action: init_value for action in range(self.action_space.n)}
+        self.N = {action: 0 for action in range(self.action_space.n)}
 
     # TODO(klad) : Handle observations for generic case.
     def act(self, observation):
@@ -29,7 +30,7 @@ class EpsilonGreedyAgent(object):
 
     def optimal_action(self):
         """Find optimal action."""
-        best_value = max([self.Q[action] for action in range(0, self.action_space.N)])
+        best_value = max([self.Q[action] for action in range(0, self.action_space.n)])
         optimal_actions = [action for action in self.Q if self.Q[action] == best_value]
         assert (len(optimal_actions) > 0)
         # Return randomly from optimal actions.
@@ -42,6 +43,7 @@ class EpsilonGreedyAgent(object):
             self.Q[self.prev_action] += ((reward - self.Q[self.prev_action]) / self.N[self.prev_action])
         else:
             self.Q[self.prev_action] += self.alpha * (reward - self.Q[self.prev_action])
+
 
 if __name__ == '__main__':
     # You can optionally set up the logger. Also fine to set the level
@@ -56,7 +58,7 @@ if __name__ == '__main__':
     # directory, including one with existing data -- all monitor files
     # will be namespaced). You can also dump to a tempdir if you'd
     # like: tempfile.mkdtemp().
-    outdir = '/tmp/random-agent-multiarmbandit-results'
+    outdir = '/tmp/epsilon-greedy-agent-multiarmbandit-results'
     env.monitor.start(outdir, force=True, seed=0)
 
     # This declaration must go *after* the monitor call, since the
@@ -73,7 +75,7 @@ if __name__ == '__main__':
         ob = env.reset()
 
         for j in range(max_steps):
-            action = agent.act(None, reward, done)
+            action = agent.act(ob)
             ob, reward, done, _ = env.step(action)
             agent.update(reward)
             if done:
@@ -87,5 +89,4 @@ if __name__ == '__main__':
 
     # Upload to the scoreboard. We could also do this from another
     # process if we wanted.
-    logger.info("Successfully ran RandomAgent. Now trying to upload results to the scoreboard. If it breaks, you can always just try re-uploading the same results.")
-    gym.upload(outdir)
+    logger.info("Successfully ran EpsilonGreedyAgent")
