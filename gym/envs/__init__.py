@@ -426,3 +426,11 @@ register(
     entry_point='gym.envs.safety:OffSwitchCartpoleProbEnv',
     timestep_limit=200,
 )
+
+
+# MultiArmBandit
+# ----------------------------------------
+register(
+    id='MultiArmBandit-v0',
+    entry_point='gym.envs.multiarm_bandit:MultiArmBandit',
+)
