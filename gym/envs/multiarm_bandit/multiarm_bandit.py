@@ -45,3 +45,12 @@ class MultiArmBandit(gym.Env):
 
     def _reset(self):
         self.q_star = self.init_q_star()
+
+    def printEnv(self):
+        print "Value Mean: %s" % self.value_mean
+        print "Value Var: %s" % self.value_var
+        print "Reward Var: %s" % self.reward_var
+        print "Qstar Values"
+        for i in self.q_star:
+            print i, self.q_star[i] 
+
