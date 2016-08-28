@@ -18,7 +18,7 @@ if __name__ == '__main__':
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
-    env = gym.make('MultiArmBandit-v0' if len(sys.argv)<2 else sys.argv[1])
+    env = gym.make('CartPole-v0' if len(sys.argv)<2 else sys.argv[1])
 
     # You provide the directory to write to (can be an existing
     # directory, including one with existing data -- all monitor files
@@ -55,4 +55,4 @@ if __name__ == '__main__':
     # Upload to the scoreboard. We could also do this from another
     # process if we wanted.
     logger.info("Successfully ran RandomAgent. Now trying to upload results to the scoreboard. If it breaks, you can always just try re-uploading the same results.")
-    #gym.upload(outdir)
+    gym.upload(outdir)
