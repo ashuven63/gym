@@ -16,3 +16,10 @@ class MultiArmedBandit(gym.Env):
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
+
+    def _step(self, action):
+        assert self.action_space.contains(action)
+	reward = np.sample(qstar[action], reward_var)
+	# For the given action sample the gaussian arounf reward_var
+	return (None, reward, False, {})
+
