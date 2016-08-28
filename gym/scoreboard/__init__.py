@@ -1173,4 +1173,11 @@ The robot model was originally created by Tassa et al. [Tassa12]_.
     deprecated=True,
 )
 
+add_task(
+    id='MultiArmBandit-v0',
+    summary="Multi armed bandit",
+    group='multiarm_bandit',
+    contributor='ashuven63',
+)
+
 registry.finalize()
