@@ -3,15 +3,23 @@ import gym
 from gym import spaces
 from gym.utils import seeding
 
+
 class MultiArmedBandit(gym.Env):
 
-    def __init__(self, num_arms=10, val_mean=0, val_var=1, reward_var=1):
-    	self.action_space = spaces.Discrete(num_arms)
-    	self._seed()
+    def __init__(self, num_arms=10, value_mean=0, value_var=1, reward_var=1):
+        self.value_mean = value_mean
+        self.value_var = value_var
+        self.reward_var = reward_var
+        self.action_space = spaces.Discrete(num_arms)
+        self._seed()
         self._reset()
 
     def init_q_star(self):
-    	return np.random.normal(loc=val_mean, scale=val_var, size=[num_arms])
+        # TODO(abora) : figure out how to use random seed
+        q_star = {}
+        for action in self.action_space:
+            q_star[action] = np.random.normal(loc=self.value_mean, scale=self.value_var)
+        return q_star
 
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -19,7 +27,8 @@ class MultiArmedBandit(gym.Env):
 
     def _step(self, action):
         assert self.action_space.contains(action)
-	reward = np.sample(qstar[action], reward_var)
-	# For the given action sample the gaussian arounf reward_var
+	reward = np.random.normal(loc = q_star[action], scale = self.reward_var)
 	return (None, reward, False, {})
 
+    def _reset(self):
+        self.q_star = self.init_q_star()
