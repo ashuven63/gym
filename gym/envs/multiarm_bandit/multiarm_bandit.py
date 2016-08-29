@@ -17,6 +17,7 @@ class MultiArmBandit(gym.Env):
         self.value_var = value_var
         self.reward_var = reward_var
         self.stationary = stationary
+        self.random_walk_var = random_walk_var
         self.action_space = spaces.Discrete(num_arms)
         self._seed()
         self._reset()
@@ -52,5 +53,4 @@ class MultiArmBandit(gym.Env):
         print "Reward Var: %s" % self.reward_var
         print "Qstar Values"
         for i in self.q_star:
-            print i, self.q_star[i] 
-
+            print i, self.q_star[i]

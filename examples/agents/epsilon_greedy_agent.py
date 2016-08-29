@@ -6,7 +6,7 @@ import numpy as np
 
 class EpsilonGreedyAgent(object):
     """Expects the driver to call update after every call to act"""
-    def __init__(self, action_space, epsilon=0.1, alpha=0.1, recency_weighting=True, init_value=0):
+    def __init__(self, action_space, epsilon=0.0, alpha=0.1, recency_weighting=True, init_value=0):
         self.action_space = action_space
         self.epsilon = epsilon
         self.alpha = alpha
@@ -31,6 +31,7 @@ class EpsilonGreedyAgent(object):
     def optimal_action(self):
         """Find optimal action."""
         best_value = max([self.Q[action] for action in range(0, self.action_space.n)])
+        print 'best_value = ', best_value
         optimal_actions = [action for action in self.Q if self.Q[action] == best_value]
         assert (len(optimal_actions) > 0)
         # Return randomly from optimal actions.
@@ -64,31 +65,31 @@ if __name__ == '__main__':
     # like: tempfile.mkdtemp().
     outdir = '/tmp/epsilon-greedy-agent-multiarmbandit-results'
     env.monitor.start(outdir, force=True, seed=0)
-    print env.printEnv()
     # This declaration must go *after* the monitor call, since the
     # monitor's seeding creates a new action_space instance with the
     # appropriate pseudorandom number generator.
     agent = EpsilonGreedyAgent(env.action_space)
 
-    episode_count = 100
-    max_steps = 200
+    episode_count = 1
+    max_steps = 10
     reward = 0
     done = False
 
     for i in range(episode_count):
         ob = env.reset()
-
+        print env.printEnv()
         for j in range(max_steps):
             action = agent.act(ob)
             ob, reward, done, _ = env.step(action)
             agent.update(reward)
+            print(agent)
+            print env.printEnv()
             if done:
                 break
             # Note there's no env.render() here. But the environment still can open window and
             # render if asked by env.monitor: it calls env.render('rgb_array') to record video.
             # Video is not recorded every episode, see capped_cubic_video_schedule for details.
 
-    print(agent)
 
     # Dump result info to disk
     env.monitor.close()
