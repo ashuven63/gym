@@ -103,7 +103,7 @@ if __name__ == '__main__':
             state_logger.update_log(j)
             print(agent)
             print(env)
-            state_logger.dump_log('{0}/episode{1}'.format(outdir,j))
+            state_logger.dump_log('{0}/episode{1}'.format(outdir, j))
             if done:
                 break
 
