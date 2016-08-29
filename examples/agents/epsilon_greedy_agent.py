@@ -44,6 +44,10 @@ class EpsilonGreedyAgent(object):
         else:
             self.Q[self.prev_action] += self.alpha * (reward - self.Q[self.prev_action])
 
+    def __str__(self):
+        for action in self.Q:
+            print action, self.Q[action], self.N[action]
+        return ""
 
 if __name__ == '__main__':
     # You can optionally set up the logger. Also fine to set the level
@@ -83,6 +87,8 @@ if __name__ == '__main__':
             # Note there's no env.render() here. But the environment still can open window and
             # render if asked by env.monitor: it calls env.render('rgb_array') to record video.
             # Video is not recorded every episode, see capped_cubic_video_schedule for details.
+
+    print(agent)
 
     # Dump result info to disk
     env.monitor.close()
