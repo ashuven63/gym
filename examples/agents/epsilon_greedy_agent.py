@@ -45,6 +45,15 @@ class EpsilonGreedyAgent(object):
         else:
             self.Q[self.prev_action] += self.alpha * (reward - self.Q[self.prev_action])
 
+    def get_state(self):
+        state = {'epsilon' : self.epsilon,
+                 'alpha' : self.alpha,
+                 'recency_weighting': self.recency_weighting,
+                 'init_value': self.init_value,
+                 'Q': self.Q,
+                 'N': self.N}
+        return state
+
     def __str__(self):
         for action in self.Q:
             print action, self.Q[action], self.N[action]
