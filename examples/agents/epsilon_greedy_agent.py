@@ -6,7 +6,7 @@ import numpy as np
 
 sys.path.append("../utilities")
 from logger import Logger
-
+from plotter import Plotter
 
 class EpsilonGreedyAgent(object):
     """Expects the driver to call update after every call to act"""
@@ -88,8 +88,8 @@ if __name__ == '__main__':
     # appropriate pseudorandom number generator.
     agent = EpsilonGreedyAgent(env.action_space)
 
-    episode_count = 1
-    max_steps = 10
+    episode_count = 10
+    max_steps = 1000
     reward = 0
     done = False
 
@@ -101,11 +101,11 @@ if __name__ == '__main__':
             ob, reward, done, _ = env.step(action)
             agent.update(reward)
             state_logger.update_log(j)
-            print(agent)
-            print(env)
-            state_logger.dump_log('{0}/episode{1}'.format(outdir, j))
+            # print(agent)
+            # print(env)
             if done:
                 break
+        state_logger.dump_log('{0}/episode{1}'.format(outdir, i))
 
     # Dump result info to disk
     env.monitor.close()
@@ -113,3 +113,8 @@ if __name__ == '__main__':
     # Upload to the scoreboard. We could also do this from another
     # process if we wanted.
     logger.info("Successfully ran EpsilonGreedyAgent")
+    logger.info("Plotting the results")
+    plotter = Plotter(outdir, episode_count)
+    #plotter.plot_single_episode(0)
+    plotter.plot_episode_aggregate_results()
+
