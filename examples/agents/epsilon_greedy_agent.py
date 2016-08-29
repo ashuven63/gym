@@ -92,7 +92,7 @@ if __name__ == '__main__':
             ob, reward, done, _ = env.step(action)
             agent.update(reward)
             print(agent)
-            print env.printEnv()
+            print(env)
             if done:
                 break
             # Note there's no env.render() here. But the environment still can open window and
