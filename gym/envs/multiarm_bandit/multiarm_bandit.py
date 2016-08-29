@@ -47,12 +47,12 @@ class MultiArmBandit(gym.Env):
     def _reset(self):
         self.q_star = self.init_q_star()
 
-    def getState(self):
+    def get_state(self):
         state = {}
         state['value_mean'] = self.value_mean
         state['value_var'] = self.value_var
         state['reward_var'] = self.reward_var
-        state['qstar_values'] = self.qstar_values 
+        state['qstar_values'] = self.q_star
         return state
 
     def __str__(self):

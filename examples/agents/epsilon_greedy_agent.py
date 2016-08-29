@@ -1,7 +1,11 @@
 import random
 import logging
+import sys
 import gym
 import numpy as np
+
+sys.path.append("../utilities")
+from logger import Logger
 
 
 class EpsilonGreedyAgent(object):
@@ -11,8 +15,10 @@ class EpsilonGreedyAgent(object):
         self.epsilon = epsilon
         self.alpha = alpha
         self.recency_weighting = recency_weighting
+        self.init_value = init_value
         # Initialize initial Q estimates and value counts for actions.
         self.prev_action = None
+        self.cur_reward = None
         self.Q = {action: init_value for action in range(self.action_space.n)}
         self.N = {action: 0 for action in range(self.action_space.n)}
 
@@ -39,6 +45,7 @@ class EpsilonGreedyAgent(object):
 
     def update(self, reward):
         """Update action estimates after receiving reward from environment"""
+        self.cur_reward = reward
         self.N[self.prev_action] += 1
         if self.recency_weighting:
             self.Q[self.prev_action] += ((reward - self.Q[self.prev_action]) / self.N[self.prev_action])
@@ -50,6 +57,7 @@ class EpsilonGreedyAgent(object):
                  'alpha' : self.alpha,
                  'recency_weighting': self.recency_weighting,
                  'init_value': self.init_value,
+                 'reward': self.cur_reward,
                  'Q': self.Q,
                  'N': self.N}
         return state
@@ -74,6 +82,7 @@ if __name__ == '__main__':
     # like: tempfile.mkdtemp().
     outdir = '/tmp/epsilon-greedy-agent-multiarmbandit-results'
     env.monitor.start(outdir, force=True, seed=0)
+
     # This declaration must go *after* the monitor call, since the
     # monitor's seeding creates a new action_space instance with the
     # appropriate pseudorandom number generator.
@@ -86,19 +95,17 @@ if __name__ == '__main__':
 
     for i in range(episode_count):
         ob = env.reset()
-        print env.printEnv()
+        state_logger = Logger(env, agent)
         for j in range(max_steps):
             action = agent.act(ob)
             ob, reward, done, _ = env.step(action)
             agent.update(reward)
+            state_logger.update_log(j)
             print(agent)
             print(env)
+            state_logger.dump_log('{0}/episode{1}'.format(outdir,j))
             if done:
                 break
-            # Note there's no env.render() here. But the environment still can open window and
-            # render if asked by env.monitor: it calls env.render('rgb_array') to record video.
-            # Video is not recorded every episode, see capped_cubic_video_schedule for details.
-
 
     # Dump result info to disk
     env.monitor.close()
