@@ -10,7 +10,7 @@ class MultiArmBandit(gym.Env):
                  num_arms=10,
                  value_mean=0,
                  value_var=1,
-                 reward_var=1,
+                 reward_var=0.1,
                  stationary=True,
                  random_walk_var=0.01):
         self.value_mean = value_mean
@@ -53,7 +53,7 @@ class MultiArmBandit(gym.Env):
         state['value_var'] = self.value_var
         state['reward_var'] = self.reward_var
         state['qstar_values'] = self.q_star
-        state['optimal_value'] = np.max(self.q_star.values())
+        state['optimal_action'] = max(self.q_star, key=self.q_star.get)
         return state
 
     def __str__(self):

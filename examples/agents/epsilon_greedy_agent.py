@@ -10,7 +10,7 @@ from plotter import Plotter
 
 class EpsilonGreedyAgent(object):
     """Expects the driver to call update after every call to act"""
-    def __init__(self, action_space, epsilon=0.0, alpha=0.1, recency_weighting=True, init_value=0):
+    def __init__(self, action_space, epsilon=0.0, alpha=0.1, recency_weighting=False, init_value=0):
         self.action_space = action_space
         self.epsilon = epsilon
         self.alpha = alpha
@@ -57,6 +57,7 @@ class EpsilonGreedyAgent(object):
                  'alpha' : self.alpha,
                  'recency_weighting': self.recency_weighting,
                  'init_value': self.init_value,
+                 'action': self.prev_action,
                  'reward': self.cur_reward,
                  'Q': self.Q,
                  'N': self.N}
@@ -86,10 +87,10 @@ if __name__ == '__main__':
     # This declaration must go *after* the monitor call, since the
     # monitor's seeding creates a new action_space instance with the
     # appropriate pseudorandom number generator.
-    agent = EpsilonGreedyAgent(env.action_space)
+    agent = EpsilonGreedyAgent(env.action_space, epsilon=0.1)
 
-    episode_count = 10
-    max_steps = 1000
+    episode_count = 1
+    max_steps = 100
     reward = 0
     done = False
 
@@ -101,8 +102,10 @@ if __name__ == '__main__':
             ob, reward, done, _ = env.step(action)
             agent.update(reward)
             state_logger.update_log(j)
-            # print(agent)
-            # print(env)
+            print '\nEnvironment State:'
+            print(env)
+            print '\nAgent State:'
+            print(agent)
             if done:
                 break
         state_logger.dump_log('{0}/episode{1}'.format(outdir, i))
@@ -114,7 +117,7 @@ if __name__ == '__main__':
     # process if we wanted.
     logger.info("Successfully ran EpsilonGreedyAgent")
     logger.info("Plotting the results")
-    plotter = Plotter(outdir, episode_count)
+    plotter = Plotter(outdir, episode_count, max_steps)
     #plotter.plot_single_episode(0)
     plotter.plot_episode_aggregate_results()
 
