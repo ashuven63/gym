@@ -13,8 +13,8 @@ class Plotter(object):
         filename = '{0}/episode{1}'.format(self.outdir, episode_num)
         with open(filename, 'rb') as f:
             episode = pickle.load(f)
-        print 'Loading pickle dump...'
-        print episode
+        # print 'Loading pickle dump...'
+        # print episode
         return episode
 
     def get_episode_stats(self, episode_num):
@@ -24,7 +24,7 @@ class Plotter(object):
         env_states = list(env_states)
         agent_states = list(agent_states)
         num_of_steps = len(steps)
-        print 'length %s' % num_of_steps
+        # print 'length %s' % num_of_steps
         rewards = [agent_state['reward'] for agent_state in agent_states]
         optimal_action = [env_state['optimal_action'] for env_state in env_states]
         action_taken = [agent_state['action'] for agent_state in agent_states]
@@ -47,7 +47,7 @@ class Plotter(object):
     def plot_episode_aggregate_results(self):
         episode_stats = [self.get_episode_stats(i) for i in range(self.num_of_episodes)]
         episode_rewards = [episode_stat[0] for episode_stat in episode_stats]
-        print episode_rewards
+        # print episode_rewards
         mean_reward = np.mean(np.array(episode_rewards), axis=0)
         episode_optimal_actions = []
         sum_of_optimal_actions = 0

@@ -10,7 +10,7 @@ class MultiArmBandit(gym.Env):
                  num_arms=10,
                  value_mean=0,
                  value_var=1,
-                 reward_var=0.1,
+                 reward_var=1,
                  stationary=True,
                  random_walk_var=0.01):
         self.value_mean = value_mean
@@ -38,7 +38,7 @@ class MultiArmBandit(gym.Env):
         reward = np.random.normal(loc=self.q_star[action], scale=self.reward_var)
         if not self.stationary:
             self.random_walk()
-        return (None, reward, False, {})
+        return None, reward, False, {}
 
     def random_walk(self):
         for action in range(0, self.action_space.n):

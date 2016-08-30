@@ -37,7 +37,7 @@ class EpsilonGreedyAgent(object):
     def optimal_action(self):
         """Find optimal action."""
         best_value = max([self.Q[action] for action in range(0, self.action_space.n)])
-        print 'best_value = ', best_value
+        # print 'best_value = ', best_value
         optimal_actions = [action for action in self.Q if self.Q[action] == best_value]
         assert (len(optimal_actions) > 0)
         # Return randomly from optimal actions.
@@ -47,7 +47,7 @@ class EpsilonGreedyAgent(object):
         """Update action estimates after receiving reward from environment"""
         self.cur_reward = reward
         self.N[self.prev_action] += 1
-        if self.recency_weighting:
+        if not self.recency_weighting:
             self.Q[self.prev_action] += ((reward - self.Q[self.prev_action]) / self.N[self.prev_action])
         else:
             self.Q[self.prev_action] += self.alpha * (reward - self.Q[self.prev_action])
@@ -64,8 +64,11 @@ class EpsilonGreedyAgent(object):
         return state
 
     def __str__(self):
+        print 'Action\tEstimate\tFrequency'
         for action in self.Q:
-            print action, self.Q[action], self.N[action]
+            print '{0}\t{1}\t{2}'.format(action, self.Q[action], self.N[action])
+        print 'Action{0}'.format(self.prev_action)
+        print 'Reward{0}'.format(self.cur_reward)
         return ""
 
 if __name__ == '__main__':
@@ -82,15 +85,15 @@ if __name__ == '__main__':
     # will be namespaced). You can also dump to a tempdir if you'd
     # like: tempfile.mkdtemp().
     outdir = '/tmp/epsilon-greedy-agent-multiarmbandit-results'
-    env.monitor.start(outdir, force=True, seed=0)
+    # env.monitor.start(outdir, force=True, seed=0)
 
     # This declaration must go *after* the monitor call, since the
     # monitor's seeding creates a new action_space instance with the
     # appropriate pseudorandom number generator.
     agent = EpsilonGreedyAgent(env.action_space, epsilon=0.1)
 
-    episode_count = 1
-    max_steps = 100
+    episode_count = 2000
+    max_steps = 1000
     reward = 0
     done = False
 
@@ -102,16 +105,11 @@ if __name__ == '__main__':
             ob, reward, done, _ = env.step(action)
             agent.update(reward)
             state_logger.update_log(j)
-            print '\nEnvironment State:'
-            print(env)
-            print '\nAgent State:'
-            print(agent)
             if done:
                 break
         state_logger.dump_log('{0}/episode{1}'.format(outdir, i))
-
-    # Dump result info to disk
-    env.monitor.close()
+        if i % 10 == 0:
+            print 'Completed ', i, ' episodes'
 
     # Upload to the scoreboard. We could also do this from another
     # process if we wanted.
