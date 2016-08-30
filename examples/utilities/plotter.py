@@ -18,7 +18,7 @@ class Plotter(object):
         return episode
 
     def get_episode_stats(self, episode_num):
-        steps = (self.load_episode(episode_num)).values()
+        steps = self.load_episode(episode_num)
         # print episodes
         env_states, agent_states = zip(*steps)
         env_states = list(env_states)
@@ -54,7 +54,7 @@ class Plotter(object):
         for i in range(self.num_of_steps):
             if episode_stat[1][i] == episode_stat[2][i]:
                 sum_of_optimal_actions += 1
-            episode_optimal_actions.append((sum_of_optimal_actions / self.num_of_steps))
+            episode_optimal_actions.append((sum_of_optimal_actions * 1.0 / self.num_of_steps))
         plt.figure(1)
         plt.subplot(211)
         self.plot_reward(mean_reward)

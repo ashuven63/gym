@@ -8,6 +8,7 @@ sys.path.append("../utilities")
 from logger import Logger
 from plotter import Plotter
 
+
 class EpsilonGreedyAgent(object):
     """Expects the driver to call update after every call to act"""
     def __init__(self, action_space, epsilon=0.0, alpha=0.1, recency_weighting=False, init_value=0):
@@ -39,6 +40,7 @@ class EpsilonGreedyAgent(object):
         best_value = max([self.Q[action] for action in range(0, self.action_space.n)])
         # print 'best_value = ', best_value
         optimal_actions = [action for action in self.Q if self.Q[action] == best_value]
+        # print 'Optimal actions are ', optimal_actions
         assert (len(optimal_actions) > 0)
         # Return randomly from optimal actions.
         return random.choice(optimal_actions)
@@ -48,13 +50,13 @@ class EpsilonGreedyAgent(object):
         self.cur_reward = reward
         self.N[self.prev_action] += 1
         if not self.recency_weighting:
-            self.Q[self.prev_action] += ((reward - self.Q[self.prev_action]) / self.N[self.prev_action])
+            self.Q[self.prev_action] += (reward - self.Q[self.prev_action]) / self.N[self.prev_action]
         else:
             self.Q[self.prev_action] += self.alpha * (reward - self.Q[self.prev_action])
 
     def get_state(self):
-        state = {'epsilon' : self.epsilon,
-                 'alpha' : self.alpha,
+        state = {'epsilon': self.epsilon,
+                 'alpha': self.alpha,
                  'recency_weighting': self.recency_weighting,
                  'init_value': self.init_value,
                  'action': self.prev_action,
@@ -90,23 +92,21 @@ if __name__ == '__main__':
     # This declaration must go *after* the monitor call, since the
     # monitor's seeding creates a new action_space instance with the
     # appropriate pseudorandom number generator.
-    agent = EpsilonGreedyAgent(env.action_space, epsilon=0.1)
 
-    episode_count = 2000
+    episode_count = 200
     max_steps = 1000
-    reward = 0
-    done = False
 
     for i in range(episode_count):
         ob = env.reset()
+        # print(env)
+        agent = EpsilonGreedyAgent(env.action_space, epsilon=0.1)
         state_logger = Logger(env, agent)
         for j in range(max_steps):
             action = agent.act(ob)
             ob, reward, done, _ = env.step(action)
+            # print "action = {0}, reward = {1}".format(action, reward)
             agent.update(reward)
             state_logger.update_log(j)
-            if done:
-                break
         state_logger.dump_log('{0}/episode{1}'.format(outdir, i))
         if i % 10 == 0:
             print 'Completed ', i, ' episodes'
@@ -116,6 +116,5 @@ if __name__ == '__main__':
     logger.info("Successfully ran EpsilonGreedyAgent")
     logger.info("Plotting the results")
     plotter = Plotter(outdir, episode_count, max_steps)
-    #plotter.plot_single_episode(0)
+    # plotter.plot_single_episode(0)
     plotter.plot_episode_aggregate_results()
-
