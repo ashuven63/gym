@@ -2,10 +2,12 @@ import random
 import logging
 import sys
 import gym
+import os
 import numpy as np
 
 sys.path.append("../utilities")
 from logger import Logger
+from parser import Parser
 from plotter import Plotter
 
 
@@ -84,40 +86,44 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
 
     env = gym.make('MultiArmBandit-v0')
+    episode_count = 20
+    max_steps = 100
 
-    # You provide the directory to write to (can be an existing
-    # directory, including one with existing data -- all monitor files
-    # will be namespaced). You can also dump to a tempdir if you'd
-    # like: tempfile.mkdtemp().
-    outdir = '/tmp/epsilon-greedy-agent-multiarmbandit-results'
-    # env.monitor.start(outdir, force=True, seed=0)
+    epsilons = [0.0, 0.01, 0.1]
+    agents = [EpsilonGreedyAgent(env.action_space, epsilon=epsilon) for epsilon in epsilons]
+    outdirs = ['/tmp/epsilon-greedy-agent-multiarmbandit-results' + str(i) for i in range(len(epsilons))]
 
-    # This declaration must go *after* the monitor call, since the
-    # monitor's seeding creates a new action_space instance with the
-    # appropriate pseudorandom number generator.
+    for outdir in outdirs:
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
 
-    episode_count = 2000
-    max_steps = 1000
+    # agent = EpsilonGreedyAgent(env.action_space, epsilon=0.0, init_value=5, alpha=0.1, recency_weighting=True)
+    # outdir = '/tmp/epsilon-greedy-agent-multiarmbandit-results'
 
-    agent = EpsilonGreedyAgent(env.action_space, epsilon=0.0, init_value=5, alpha=0.1, recency_weighting=True)
+    for agent, outdir in zip(agents, outdirs):
+        logger.info('Now running the next agent')
+        for i in range(episode_count):
+            ob = env.reset()
+            agent.reset()
+            state_logger = Logger(env, agent)
+            for j in range(max_steps):
+                action = agent.act(ob)
+                ob, reward, done, _ = env.step(action)
+                agent.update(reward)
+                state_logger.update_log(j)
+            state_logger.dump_log('{0}/episode{1}'.format(outdir, i))
+            if i % 10 == 0:
+                print 'Completed ', i, ' episodes'
+        logger.info("Successfully ran EpsilonGreedyAgent")
 
-    for i in range(episode_count):
-        ob = env.reset()
-        agent.reset()
-        state_logger = Logger(env, agent)
-        for j in range(max_steps):
-            action = agent.act(ob)
-            ob, reward, done, _ = env.step(action)
-            agent.update(reward)
-            state_logger.update_log(j)
-        state_logger.dump_log('{0}/episode{1}'.format(outdir, i))
-        if i % 10 == 0:
-            print 'Completed ', i, ' episodes'
+    logger.info("Parsing the results")
+    rewards_list, opt_act_list = [], []
+    for outdir in outdirs:
+        parser = Parser(outdir, episode_count, max_steps)
+        [mean_reward, mean_optimal_actions] = parser.get_episode_aggregate_results()
+        rewards_list.append(mean_reward)
+        opt_act_list.append(mean_optimal_actions)
 
-    # Upload to the scoreboard. We could also do this from another
-    # process if we wanted.
-    logger.info("Successfully ran EpsilonGreedyAgent")
     logger.info("Plotting the results")
-    plotter = Plotter(outdir, episode_count, max_steps)
-    # plotter.plot_single_episode(0)
-    plotter.plot_episode_aggregate_results()
+    plotter = Plotter(episode_count, max_steps)
+    plotter.plot_episode_aggregate_results(rewards_list, opt_act_list)
