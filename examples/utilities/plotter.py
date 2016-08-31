@@ -54,7 +54,7 @@ class Plotter(object):
         for i in range(self.num_of_steps):
             if episode_stat[1][i] == episode_stat[2][i]:
                 sum_of_optimal_actions += 1
-            episode_optimal_actions.append((sum_of_optimal_actions * 1.0 / self.num_of_steps))
+            episode_optimal_actions.append(sum_of_optimal_actions * 1.0 / (i+1))
         plt.figure(1)
         plt.subplot(211)
         self.plot_reward(mean_reward)
