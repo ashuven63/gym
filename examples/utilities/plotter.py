@@ -57,10 +57,9 @@ class Plotter(object):
                     sum_of_optimal_actions += 1
                 episode_optimal_actions.append(sum_of_optimal_actions * 100.0 / (i+1))
             episodes_optimal_actions.append(episode_optimal_actions)
-        mean_optimal_actions = np.mean(np.array(episodes_optimal_actions),axis=0)
+        mean_optimal_actions = np.mean(np.array(episodes_optimal_actions), axis=0)
         plt.figure(1)
-        ax1 = plt.subplot(211)
-        ax1.set_ylim([0, 100])
+        plt.subplot(211)
         self.plot_reward(mean_reward)
         ax2 = plt.subplot(212)
         ax2.set_ylim([0, 100])

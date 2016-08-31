@@ -18,10 +18,7 @@ class EpsilonGreedyAgent(object):
         self.recency_weighting = recency_weighting
         self.init_value = init_value
         # Initialize initial Q estimates and value counts for actions.
-        self.prev_action = None
-        self.cur_reward = None
-        self.Q = {action: init_value for action in range(self.action_space.n)}
-        self.N = {action: 0 for action in range(self.action_space.n)}
+        self.reset()
 
     # TODO(klad) : Handle observations for generic case.
     def act(self, observation):
@@ -65,6 +62,12 @@ class EpsilonGreedyAgent(object):
                  'N': self.N}
         return state
 
+    def reset(self):
+        self.prev_action = None
+        self.cur_reward = None
+        self.Q = {action: self.init_value for action in range(self.action_space.n)}
+        self.N = {action: 0 for action in range(self.action_space.n)}
+
     def __str__(self):
         print 'Action\tEstimate\tFrequency'
         for action in self.Q:
@@ -96,10 +99,10 @@ if __name__ == '__main__':
     episode_count = 200
     max_steps = 1000
 
+    agent = EpsilonGreedyAgent(env.action_space, epsilon=0.01)
     for i in range(episode_count):
         ob = env.reset()
-        # print(env)
-        agent = EpsilonGreedyAgent(env.action_space, epsilon=0.1)
+        agent.reset()
         state_logger = Logger(env, agent)
         for j in range(max_steps):
             action = agent.act(ob)
