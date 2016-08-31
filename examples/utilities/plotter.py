@@ -23,8 +23,6 @@ class Plotter(object):
         env_states, agent_states = zip(*steps)
         env_states = list(env_states)
         agent_states = list(agent_states)
-        num_of_steps = len(steps)
-        # print 'length %s' % num_of_steps
         rewards = [agent_state['reward'] for agent_state in agent_states]
         optimal_action = [env_state['optimal_action'] for env_state in env_states]
         action_taken = [agent_state['action'] for agent_state in agent_states]
@@ -49,15 +47,22 @@ class Plotter(object):
         episode_rewards = [episode_stat[0] for episode_stat in episode_stats]
         # print episode_rewards
         mean_reward = np.mean(np.array(episode_rewards), axis=0)
-        episode_optimal_actions = []
-        sum_of_optimal_actions = 0
-        for i in range(self.num_of_steps):
-            if episode_stat[1][i] == episode_stat[2][i]:
-                sum_of_optimal_actions += 1
-            episode_optimal_actions.append(sum_of_optimal_actions * 1.0 / (i+1))
+        episodes_optimal_actions = []
+        for episode_num in range(self.num_of_episodes):
+            episode_optimal_actions = []
+            sum_of_optimal_actions = 0
+            episode_stat = episode_stats[episode_num]
+            for i in range(self.num_of_steps):
+                if episode_stat[1][i] == episode_stat[2][i]:
+                    sum_of_optimal_actions += 1
+                episode_optimal_actions.append(sum_of_optimal_actions * 100.0 / (i+1))
+            episodes_optimal_actions.append(episode_optimal_actions)
+        mean_optimal_actions = np.mean(np.array(episodes_optimal_actions),axis=0)
         plt.figure(1)
-        plt.subplot(211)
+        ax1 = plt.subplot(211)
+        ax1.set_ylim([0, 100])
         self.plot_reward(mean_reward)
-        plt.subplot(212)
-        self.plot_optimal_percent(episode_optimal_actions)
+        ax2 = plt.subplot(212)
+        ax2.set_ylim([0, 100])
+        self.plot_optimal_percent(mean_optimal_actions)
         plt.show()
