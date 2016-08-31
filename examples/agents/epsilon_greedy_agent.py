@@ -96,10 +96,11 @@ if __name__ == '__main__':
     # monitor's seeding creates a new action_space instance with the
     # appropriate pseudorandom number generator.
 
-    episode_count = 200
+    episode_count = 2000
     max_steps = 1000
 
-    agent = EpsilonGreedyAgent(env.action_space, epsilon=0.01)
+    agent = EpsilonGreedyAgent(env.action_space, epsilon=0.0, init_value=5, alpha=0.1, recency_weighting=True)
+
     for i in range(episode_count):
         ob = env.reset()
         agent.reset()
@@ -107,7 +108,6 @@ if __name__ == '__main__':
         for j in range(max_steps):
             action = agent.act(ob)
             ob, reward, done, _ = env.step(action)
-            # print "action = {0}, reward = {1}".format(action, reward)
             agent.update(reward)
             state_logger.update_log(j)
         state_logger.dump_log('{0}/episode{1}'.format(outdir, i))
