@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 
 
-class Parser(object):
+class ResultParser(object):
     def __init__(self, outdir, num_of_episodes, num_of_steps):
         self.outdir = outdir
         self.num_of_episodes = num_of_episodes

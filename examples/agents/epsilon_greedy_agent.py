@@ -7,8 +7,8 @@ import numpy as np
 
 sys.path.append("../utilities")
 from logger import Logger
-from parser import Parser
 from plotter import Plotter
+from result_parser import ResultParser
 
 
 class EpsilonGreedyAgent(object):
@@ -86,12 +86,13 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
 
     env = gym.make('MultiArmBandit-v0')
-    episode_count = 20
+    episode_count = 100
     max_steps = 100
 
     epsilons = [0.0, 0.01, 0.1]
     agents = [EpsilonGreedyAgent(env.action_space, epsilon=epsilon) for epsilon in epsilons]
     outdirs = ['/tmp/epsilon-greedy-agent-multiarmbandit-results' + str(i) for i in range(len(epsilons))]
+    labels = ['0', '0.01', '0.1']
 
     for outdir in outdirs:
         if not os.path.exists(outdir):
@@ -119,11 +120,11 @@ if __name__ == '__main__':
     logger.info("Parsing the results")
     rewards_list, opt_act_list = [], []
     for outdir in outdirs:
-        parser = Parser(outdir, episode_count, max_steps)
+        parser = ResultParser(outdir, episode_count, max_steps)
         [mean_reward, mean_optimal_actions] = parser.get_episode_aggregate_results()
         rewards_list.append(mean_reward)
         opt_act_list.append(mean_optimal_actions)
 
     logger.info("Plotting the results")
     plotter = Plotter(episode_count, max_steps)
-    plotter.plot_episode_aggregate_results(rewards_list, opt_act_list)
+    plotter.plot_episode_aggregate_results(rewards_list, opt_act_list, labels)
