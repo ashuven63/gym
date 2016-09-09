@@ -28,12 +28,12 @@ class Plotter(object):
         handles = []
         for mean_reward, label in zip(rewards_list, label_list):
             handles.append(self.plot_reward(mean_reward, label))
-        plt.legend(handles=handles)
+        plt.legend(handles=handles, loc=4)
 
         plt.subplot(212)
         handles = []
         for mean_optimal_actions, label in zip(opt_act_list, label_list):
             handles.append(self.plot_optimal_percent(mean_optimal_actions, label))
-        plt.legend(handles=handles)
+        plt.legend(handles=handles, loc=4)
 
         plt.show()

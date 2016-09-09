@@ -12,7 +12,7 @@ class MultiArmBandit(gym.Env):
                  value_var=1,
                  reward_var=1,
                  stationary=True,
-                 random_walk_var=0.01):
+                 random_walk_var=0.1):
         self.value_mean = value_mean
         self.value_var = value_var
         self.reward_var = reward_var
