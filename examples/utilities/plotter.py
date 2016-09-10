@@ -35,5 +35,4 @@ class Plotter(object):
         for mean_optimal_actions, label in zip(opt_act_list, label_list):
             handles.append(self.plot_optimal_percent(mean_optimal_actions, label))
         plt.legend(handles=handles, loc=4)
-
         plt.show()
